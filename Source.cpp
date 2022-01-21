@@ -5,6 +5,7 @@
 
 using namespace std;
 
+//To store information from formatted txt file
 struct info {
 	string Name;
 	long SSN;
@@ -12,6 +13,7 @@ struct info {
 	string Address;
 };
 
+//prints a singular info struct
 void printInfo(info Info) {
 	cout << "Name: " << Info.Name << '\n';
 	cout << "SSN: " << Info.SSN << '\n';
@@ -19,6 +21,7 @@ void printInfo(info Info) {
 	cout << "Address: " << Info.Address << endl << endl;
 }
 
+//prints an array of info structs
 void printArray(info Info[], int value){
 	for (int j = 0; j <= value; j++) {
 		cout << '\n';
@@ -30,12 +33,13 @@ void printArray(info Info[], int value){
 	}
 }
 
+//sorts the array in ascending fasion with bubble sort
 void sortArray(info Info[], int i) {
+	info TEMP;
 	for (int x = 0; x < i-1; x++) {
 		for (int y = 0; y < i-1; y++) {
-			if (Info[y + 1].Name < Info[y].Name)
+			if (Info[y + 1].Name < Info[y].Name) //compares strings
 			{
-				info TEMP;
 				TEMP = Info[y];
 				Info[y] = Info[y + 1];
 				Info[y + 1] = TEMP;
@@ -44,13 +48,14 @@ void sortArray(info Info[], int i) {
 	}
 }
 
+//finding a specific info struct by last name
 int findStruct(info Found[], info Info[], int i) {
 	string answer;
 	char cont;
 	int y = 0;
 
 	while (true) {
-
+		//asks user if they would like to look for someone
 		cout << "Would you like to find Person? (Y/N): ";
 		cin >> cont;
 		cout << endl;
@@ -63,12 +68,12 @@ int findStruct(info Found[], info Info[], int i) {
 			for (int x = 0; x < i; x++) {
 				stringstream last(Info[x].Name);
 				string substr;
-				getline(last, substr, ',');
+				getline(last, substr, ','); //parses last till it finds a ',' and saves the first portion into substr
 
 					if (answer == substr)
 					{
 						printInfo(Info[x]);
-						Found[y] = Info[x];
+						Found[y] = Info[x]; //search history
 						y++;
 					}
 			}
@@ -80,14 +85,15 @@ int findStruct(info Found[], info Info[], int i) {
 			break;
 		}
 	}
-	return (y);
+	return (y); //returns value that represents how many structs are in the array
 }
 
+//function to add info
 int addInfo(info Info[], int value) {
 	while (true) {
 		char answer;
 		info temp;
-		cout << "Would you like to add in a Person? (Y/N): ";
+		cout << "Would you like to add in a Person? (Y/N): "; //asks user if they would like to add anyone
 		cin >> answer;
 		cout << endl;
 
@@ -105,9 +111,9 @@ int addInfo(info Info[], int value) {
 			cin.ignore();
 			getline(cin, temp.Address);
 
-			Info[value] = temp;
+			Info[value] = temp; //adds info to array (last in)
 
-			value++;
+			value++;//increments count so that information isn't overwritten in the same info struct
 		}
 		
 		if ((answer == 'N') || (answer =='n')){
@@ -117,10 +123,11 @@ int addInfo(info Info[], int value) {
 		answer = NULL;
 	}
 	
-	return (value);
+	return (value);//returns int of new amount in the array
 }
 
 int main() {
+	//initializing
 	info Info[25];
 	info Found[25];
 	ifstream myfile("a1.txt");
@@ -129,36 +136,44 @@ int main() {
 	int val;
 	
 	int i = 0;
+	int j;
 	
 
 	if (myfile.is_open()){
 		while (true) {
-			if (myfile.eof()){
+			if (myfile.eof()){ //reads till end of file
 				break;
 			}
-			getline(myfile, line);
+			//reads in the name
+			getline(myfile, line); 
 			Info[i].Name = line;
 
-			getline(myfile, line);
+			//reads in SSN but has to convert string to long
+			getline(myfile, line); 
 			temp = atol(line.c_str());
 			Info[i].SSN = temp;
 
+			//reads in age and converts string to int
 			getline(myfile, line);
 			stringstream nline(line);
 			nline >> val;
 			Info[i].Age = val;
 
+			//reads in Address
 			getline(myfile, line);
 			Info[i].Address = line;
 			i++;
 
+			//This is used so that the line of empty space isn't picked up in a struct
 			getline(myfile, line);
 		}
 	}
 	else {
 		cout << "No file found.";
 	}
+
 	myfile.close();
+
 
 	i = addInfo(Info, i);
 
@@ -166,12 +181,15 @@ int main() {
 	
 	printArray(Info, i);
 
-	int j;
+	
 	j = findStruct(Found, Info, i);
 
-	cout << '\n';
-	cout << "List of found Individuals" << endl;
-	printArray(Found, j);
+	//Only activates if a search occured
+	if (j > 0) {
+		cout << '\n';
+		cout << "List of found Individuals" << endl;
+		printArray(Found, j);
+	}
 	
 
 	return (0);
